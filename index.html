@@ -28,6 +28,7 @@
     <button class="p" id="add">+ Add block</button>
     <button id="xpng">Export image</button><button id="xjson">Export JSON</button>
     <button id="xcal">Add to calendar</button><button id="xprint">Print</button>
+    <button id="xlinks">Paste links</button>
     <button id="ijson">Import JSON</button><button id="clr">Clear</button>
     <input type="file" id="jfile" accept=".json,application/json" hidden>
   </div>
@@ -60,7 +61,7 @@
       <label id="l_room"><span>Room</span><input id="f_room"></label>
       <label class="w" id="l_name"><span>Course name</span><input id="f_name"></label>
       <label class="w" id="l_inst"><span>Instructor</span><input id="f_inst"></label>
-      <label class="w" id="l_link"><span>Link (optional)</span><input id="f_link" placeholder="https://"></label>
+      <label class="w" id="l_link"><span>Meeting link (optional)</span><input id="f_link" placeholder="https://"></label>
       <label class="w" id="l_notes"><span>Notes (optional)</span><input id="f_notes"></label>
       <label class="w" id="l_ol"><span>Name of this category (renames every "Other" block)</span><input id="f_ol" maxlength="24"></label>
       <label class="w">Day
@@ -76,6 +77,14 @@
     <div id="derr"></div>
     <div class="dact"><button class="d" id="del">Delete</button><span class="sp"></span><button id="cancel">Cancel</button><button class="p" id="save">Save</button></div>
   </dialog>
+
+  <dialog id="lk">
+  <h2>Paste meeting links</h2>
+  <p style="font-size:13px;color:var(--mut)">One per line, like <code>CS 411: https://meet.google.com/xxx-xxxx-xxx</code>. Each link is added to the class with that course code in the current schedule. Lines without a link are skipped.</p>
+  <textarea id="lkv" rows="8" style="width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></textarea>
+  <div id="lkr" style="font-size:13px;margin-top:8px"></div>
+  <div class="dact"><span class="sp"></span><button id="lkc">Close</button><button class="p" id="lks">Apply links</button></div>
+</dialog>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>

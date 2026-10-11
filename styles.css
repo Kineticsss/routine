@@ -66,3 +66,5 @@ td,th{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left}
   .wrap{overflow:visible}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+.blk a{color:inherit;text-decoration:none}

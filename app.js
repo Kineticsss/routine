@@ -81,7 +81,7 @@ async function readScheduleImage(blob){
 const oLabel=()=>(store&&store.otherLabel)||"Other";
 const tName=t=>t==="other"?oLabel():(TYPES[t]||TYPES.class).n;
 const col=(c,i)=>(c.type&&c.type!=="class"&&TCOL[c.type])||COLORS[i%COLORS.length];
-const detail=c=>[c.instructor,c.link,c.notes].filter(Boolean).join("\n");
+const detail=c=>[c.instructor,c.link?"Meeting link: "+c.link:"",c.notes].filter(Boolean).join("\n");
 const detailHtml=c=>[
   c.instructor?esc(c.instructor):"",
   c.link?`<a href="${esc(safeUrl(c.link))}" target="_blank" rel="noopener">${esc(c.link)}</a>`:"",
@@ -193,7 +193,7 @@ function render(c){
     courses.forEach((c,i)=>(c.slots||[]).forEach((s,si)=>{
       if(s.day!==d)return;
       const LN=LM.get(s)||{l:0,n:1},top=(mins(s.start)-start)*PXM,ht=(mins(s.end)-mins(s.start))*PXM-2;
-      h+=`<div class="blk${bad.has(i+":"+si)?" bad":""}" data-c="${i}" data-s="${si}" title="Drag to move, click to edit" style="left:calc(${LN.l/LN.n*100}% + 3px);width:calc(${100/LN.n}% - 6px);right:auto;top:${top}px;height:${ht}px;background:${col(c,i)}"><b>${esc(c.code||c.name)}</b>${esc(c.code?c.name:tName(c.type))}<br>${fmt(mins(s.start))}\u2013${fmt(mins(s.end))}${s.room?" \u00b7 "+esc(s.room):""}${c.link?" \ud83d\udd17":""}<div class="rz"></div></div>`;
+      h+=`<div class="blk${bad.has(i+":"+si)?" bad":""}" data-c="${i}" data-s="${si}" title="Drag to move, click to edit" style="left:calc(${LN.l/LN.n*100}% + 3px);width:calc(${100/LN.n}% - 6px);right:auto;top:${top}px;height:${ht}px;background:${col(c,i)}"><b>${esc(c.code||c.name)}</b>${esc(c.code?c.name:tName(c.type))}<br>${fmt(mins(s.start))}\u2013${fmt(mins(s.end))}${s.room?" \u00b7 "+esc(s.room):""}${c.link?` <a href="${esc(safeUrl(c.link))}" target="_blank" rel="noopener" title="Open meeting link">\ud83d\udd17</a>`:""}<div class="rz"></div></div>`;
     }));
     h+=`</div>`;
   }
@@ -273,7 +273,7 @@ function liveCheck(day,st,en){
   msg(`${NAMES[day]} ${fmt(st)}\u2013${fmt(en)}`+(hits.length?` \u26a0 conflicts with ${hits.join(", ")}`:""));
 }
 function onPointerDown(e){
-  const b=e.target.closest(".blk");if(!b||e.button>0)return;
+  const b=e.target.closest(".blk");if(!b||e.button>0||e.target.closest("a"))return;
   drag={b,ci:+b.dataset.c,si:+b.dataset.s,x0:e.clientX,y0:e.clientY,rs:e.target.classList.contains("rz"),moved:false,res:null};
   try{b.setPointerCapture(e.pointerId)}catch(_){}
 }
@@ -456,6 +456,18 @@ function nmSave(){
   }
 }
 
+const normCode=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
+function applyLinks(text){
+  const ok=[],miss=[];
+  text.split(/\r?\n/).forEach(line=>{
+    const m=line.match(/^\s*(.+?)\s*[:\-\u2013]\s*(https?:\/\/\S+)\s*$/i);
+    if(!m)return;
+    const c=courses.find(x=>(x.type||"class")==="class"&&normCode(x.code)===normCode(m[1]));
+    if(c){c.link=m[2];ok.push(c.code)}else miss.push(m[1].trim());
+  });
+  return {ok,miss};
+}
+
 /* ================= Wiring ================= */
 let clrT,sdT;
 
@@ -527,6 +539,15 @@ $("schPick").onchange=e=>{
   }
   if(el.checked)pickSel.add(id);else pickSel.delete(id);
   fillPick();
+};
+
+$("xlinks").onclick=()=>{$("lkv").value="";$("lkr").textContent="";$("lk").showModal()};
+$("lkc").onclick=()=>$("lk").close();
+$("lks").onclick=()=>{
+  const {ok,miss}=applyLinks($("lkv").value);
+  if(ok.length)render();
+  $("lkr").textContent=(ok.length?"Added links to: "+ok.join(", ")+". ":"No links were added. ")
+    +(miss.length?"No matching class for: "+miss.join(", ")+".":"");
 };
 
 /* ================= Init ================= */

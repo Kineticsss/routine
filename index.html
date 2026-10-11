@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schedule Maker</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+  <h1 class="app">Schedule Maker</h1>
+  <h1 id="ptitle" style="display:none"></h1>
+  <p class="sub">Plan your whole week: classes, work, workouts, study and more. Drop a screenshot of your class list to fill in your classes automatically.</p>
+
+  <div class="drop" id="drop">
+    <div>Drop a screenshot here, paste with Ctrl/Cmd+V, or</div>
+    <div class="row"><button class="p" id="pick">Choose image</button><button id="demo">Load example</button></div>
+    <img id="thumb" alt="">
+    <input type="file" id="file" accept="image/*" hidden>
+  </div>
+  <div id="msg"></div>
+
+  <div class="row" style="justify-content:flex-start;margin:0 0 10px;align-items:center">
+    <label>Schedule&nbsp;<select id="sch"></select></label>
+    <button id="snew">New</button><button id="sren">Rename</button><button id="sdel">Delete</button>
+  </div>
+  <div class="row" style="justify-content:flex-start;margin:0 0 4px">
+    <button class="p" id="add">+ Add block</button>
+    <button id="xpng">Export image</button><button id="xjson">Export JSON</button>
+    <button id="xcal">Add to calendar</button><button id="xprint">Print</button>
+    <button id="ijson">Import JSON</button><button id="clr">Clear</button>
+    <input type="file" id="jfile" accept=".json,application/json" hidden>
+  </div>
+
+  <div id="out"></div>
+
+  <dialog id="nm">
+    <h2 id="nmt"></h2>
+    <div class="f"><label class="w">Name<input id="nmv" maxlength="60" placeholder="e.g. 1st Sem 2026"></label></div>
+    <div class="dact"><span class="sp"></span><button id="nmc">Cancel</button><button class="p" id="nms">Save</button></div>
+  </dialog>
+
+  <dialog id="cal">
+    <h2>Add to your calendar</h2>
+    <p style="font-size:13px;color:var(--mut)">Best way: download the CSV and import it into a <b>new calendar</b> (e.g. "School") in Google Calendar or Outlook. Then you can toggle that calendar on or off on any device.</p>
+    <p style="font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)"><b>Re-importing after a change?</b> Delete your old "School" calendar first, then import the new file into a fresh calendar. Otherwise you'll get duplicate classes.</p>
+    <p style="font-size:13px;margin:12px 0 4px"><b>Schedules to export</b> (several selected = one CSV each, in a ZIP, so each can be its own calendar):</p>
+    <div id="schPick"></div>
+    <div id="cerr" style="color:#e03131;font-size:13px"></div>
+    <div class="dact"><button class="p" id="ccsv">Download CSV</button><span class="sp"></span><button id="cclose">Close</button></div>
+    <p style="font-size:13px;color:var(--mut);margin:12px 0 0">Or add one weekly class from the current schedule to Google Calendar:</p>
+    <div id="calLinks"></div>
+  </dialog>
+
+  <dialog id="dlg">
+    <h2 id="dtitle">Edit block</h2>
+    <div class="f">
+      <label class="w"><span>Type</span><select id="f_type"></select></label>
+      <label id="l_code"><span>Course code</span><input id="f_code"></label>
+      <label id="l_room"><span>Room</span><input id="f_room"></label>
+      <label class="w" id="l_name"><span>Course name</span><input id="f_name"></label>
+      <label class="w" id="l_inst"><span>Instructor</span><input id="f_inst"></label>
+      <label class="w" id="l_link"><span>Link (optional)</span><input id="f_link" placeholder="https://"></label>
+      <label class="w" id="l_notes"><span>Notes (optional)</span><input id="f_notes"></label>
+      <label class="w" id="l_ol"><span>Name of this category (renames every "Other" block)</span><input id="f_ol" maxlength="24"></label>
+      <label class="w">Day
+        <select id="f_day">
+          <option value="MON">Monday</option><option value="TUE">Tuesday</option><option value="WED">Wednesday</option>
+          <option value="THU">Thursday</option><option value="FRI">Friday</option><option value="SAT">Saturday</option>
+        </select>
+      </label>
+      <label>Start<input type="time" id="f_start"></label>
+      <label>End<input type="time" id="f_end"></label>
+    </div>
+    <div id="note">Code, name and instructor apply to all of this course's blocks.</div>
+    <div id="derr"></div>
+    <div class="dact"><button class="d" id="del">Delete</button><span class="sp"></span><button id="cancel">Cancel</button><button class="p" id="save">Save</button></div>
+  </dialog>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
